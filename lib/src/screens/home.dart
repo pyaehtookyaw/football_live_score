@@ -118,70 +118,124 @@ class _HomeState extends State<Home> {
           ? connectionfail
           : isLoading
               ? Loading()
-              : Column(
-                  children: [
-                    Padding(
-                        padding: const EdgeInsets.only(left: 10, right: 10),
-                        child: TitleText(
-                          date: date,
-                        )),
-                    // Expanded(
-                    //   child: ListView.builder(
-                    //       itemCount: leagueList.length,
-                    //       itemBuilder: (BuildContext context, index) {
-                    //         return FootballLeague(name: leagueList[index].name);
-                    //         // CurrencyRate(
-                    //         //     currency: matchList[index].name.toString(),
-                    //         //     rate: matchList[index].name.toString(),
-                    //         //     name: matchList[index].name.toString());
-                    //       }),
-                    // ),
-
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: leagueList.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                            onTap: () {
-                              //debugPrint('List item $index tapped $expand');
-                              setState(() {
-                                /// XOR operand returns when either or both conditions are true
-                                /// `tapped == null` on initial app start, [tapped] is null
-                                /// `index == tapped` initiate action only on tapped item
-                                /// `!expand` should check previous expand action
-                                expand = ((tapped == null) ||
-                                        ((index == tapped) || !expand))
-                                    ? !expand
-                                    : expand;
-
-                                /// This tracks which index was tapped
-                                tapped = index;
-                                //debugPrint('current expand state: $expand');
-                                // _getSubCategory(
-                                //     categoryList[index].scategoryId);
-                              });
-                            },
-
-                            /// We set ExpandableListView to be a Widget
-                            /// for Home StatefulWidget to be able to manage
-                            /// ExpandableListView expand/retract actions
-                            child: expandableListView(
-                                index,
-                                leagueList[index].parentLeagueId,
-                                leagueList[index].name,
-                                index == tapped ? expand : false,
-                                leagueList[index].matches),
-                            // child: ExpandableListView(
-                            //   title: "Title $index",
-                            //   isExpanded: expand,
-                            // ),
-                          );
-                        },
-                        //itemCount: 5,
-                      ),
-                    ),
-                  ],
+              : Container(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Expanded(
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: leagueList.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Card(
+                                child: Padding(
+                                  padding: EdgeInsets.all(12.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        leagueList[index].name,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headline3,
+                                      ),
+                                      SizedBox(height: 5),
+                                      ListView.builder(
+                                          itemCount:
+                                              leagueList[index].matches.length,
+                                          physics: ClampingScrollPhysics(),
+                                          shrinkWrap: true,
+                                          itemBuilder:
+                                              (BuildContext context, int j) {
+                                            return Text(
+                                              leagueList[index]
+                                                      .matches[j]
+                                                      .home
+                                                      .name +
+                                                  ' vs ' +
+                                                  leagueList[index]
+                                                      .matches[j]
+                                                      .away
+                                                      .name,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headline1,
+                                            );
+                                          }),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }),
+                      )
+                    ],
+                  ),
                 ),
+      // Column(
+      //     children: [
+      //       Padding(
+      //           padding: const EdgeInsets.only(left: 10, right: 10),
+      //           child: TitleText(
+      //             date: date,
+      //           )),
+      //       // Expanded(
+      //       //   child: ListView.builder(
+      //       //       itemCount: leagueList.length,
+      //       //       itemBuilder: (BuildContext context, index) {
+      //       //         return FootballLeague(name: leagueList[index].name);
+      //       //         // CurrencyRate(
+      //       //         //     currency: matchList[index].name.toString(),
+      //       //         //     rate: matchList[index].name.toString(),
+      //       //         //     name: matchList[index].name.toString());
+      //       //       }),
+      //       // ),
+
+      //       Expanded(
+      //         child: ListView.builder(
+      //           itemCount: leagueList.length,
+      //           itemBuilder: (BuildContext context, int index) {
+      //             return GestureDetector(
+      //               onTap: () {
+      //                 //debugPrint('List item $index tapped $expand');
+      //                 setState(() {
+      //                   /// XOR operand returns when either or both conditions are true
+      //                   /// `tapped == null` on initial app start, [tapped] is null
+      //                   /// `index == tapped` initiate action only on tapped item
+      //                   /// `!expand` should check previous expand action
+      //                   expand = ((tapped == null) ||
+      //                           ((index == tapped) || !expand))
+      //                       ? !expand
+      //                       : expand;
+
+      //                   /// This tracks which index was tapped
+      //                   tapped = index;
+      //                   //debugPrint('current expand state: $expand');
+      //                   // _getSubCategory(
+      //                   //     categoryList[index].scategoryId);
+      //                 });
+      //               },
+
+      //               /// We set ExpandableListView to be a Widget
+      //               /// for Home StatefulWidget to be able to manage
+      //               /// ExpandableListView expand/retract actions
+      //               child: expandableListView(
+      //                   index,
+      //                   leagueList[index].parentLeagueId,
+      //                   leagueList[index].name,
+      //                   index == tapped ? expand : false,
+      //                   leagueList[index].matches),
+      //               // child: ExpandableListView(
+      //               //   title: "Title $index",
+      //               //   isExpanded: expand,
+      //               // ),
+      //             );
+      //           },
+      //           //itemCount: 5,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
     );
   }
 
