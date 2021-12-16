@@ -9,8 +9,10 @@ import 'package:football_live_score/src/widgets/currencyrate.dart';
 import 'package:football_live_score/src/widgets/football_league.dart';
 import 'package:football_live_score/src/widgets/title.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:football_live_score/config/app_config.dart';
+import 'package:date_picker_timeline/date_picker_timeline.dart';
 
 class Home extends StatefulWidget {
   const Home({Key key}) : super(key: key);
@@ -30,6 +32,8 @@ class _HomeState extends State<Home> {
   String imageUrlStart =
       "https://images.fotmob.com/image_resources/logo/teamlogo/";
   String imageUrlEnd = "_xsmall.png";
+
+  DateTime _selectedValue = DateTime.now();
 
   @override
   void initState() {
@@ -63,6 +67,39 @@ class _HomeState extends State<Home> {
     });
     Provider.of<FootballProvider>(context, listen: false).footballData().then(
         (value) {
+      setState(() {
+        isLoading = false;
+      });
+      print(value);
+      date = value['date'];
+      print(date);
+      for (int i = 0; i < value['leagues'].length; i++) {
+        Map<String, dynamic> map = value['leagues'][i];
+        leagueList.add(Leagues.fromJson(map));
+      }
+      // print("fbData>>>$leagueList");
+      print(leagueList.length);
+    }, onError: (error) {
+      setState(() {
+        isLoading = false;
+      });
+      ToastMessage.toast(false, error.toString());
+    }).catchError((error) {
+      setState(() {
+        isLoading = false;
+      });
+      // ToastMessage.toast(false, error.toString());
+    });
+  }
+
+  footballDataWithDate(String date) async {
+    setState(() {
+      isLoading = true;
+      leagueList.clear();
+    });
+    Provider.of<FootballProvider>(context, listen: false)
+        .footballDataWithDate(date)
+        .then((value) {
       setState(() {
         isLoading = false;
       });
@@ -127,6 +164,38 @@ class _HomeState extends State<Home> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
+                      // Container(
+                      //   child: DatePicker(
+                      //     _selectedValue,
+                      //     onDateChange: (date) {
+                      //       // New date selected
+                      //       setState(() {
+                      //         _selectedValue = date;
+                      //       });
+                      //     },
+                      //   ),
+                      // ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          DatePicker(
+                            DateTime.now().subtract(const Duration(days: 3)),
+                            initialSelectedDate: _selectedValue,
+                            selectionColor: Colors.grey,
+                            selectedTextColor: Colors.white,
+                            onDateChange: (date) {
+                              print(date);
+                              // New date selected
+                              setState(() {
+                                _selectedValue = date;
+                              });
+                              var formatDate =
+                                  DateFormat("yyyyMMdd").format(_selectedValue);
+                              footballDataWithDate(formatDate);
+                            },
+                          ),
+                        ],
+                      ),
                       Expanded(
                         child: ListView.builder(
                             shrinkWrap: true,
